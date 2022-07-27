@@ -1,10 +1,7 @@
-http://example.com/2022/07/27/hexo-help/
-http://example.com/2022/07/27/hello-world/
+http://example.com/2022/07/27/hexo-and-markdown-test/
 http://example.com/categories/index.html
 http://example.com/about/index.html
 http://example.com/tags/index.html
 http://example.com/
-http://example.com/tags/hexo/
-http://example.com/tags/template/
-http://example.com/categories/others/
-http://example.com/categories/others/tools/
+http://example.com/tags/hexo-markdown-grammar/
+http://example.com/categories/tools/
