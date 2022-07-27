@@ -511,6 +511,29 @@ h6 {
     padding: 50px 0 0;
     text-align: center; } }
 
+.top-nav {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  text-align: center;
+  text-align: -webkit-center;
+  text-align: -moz-center;
+  margin-top: 10px;
+  border-top: 1px dashed #e6e6e6;
+  border-bottom: 1px dashed #e6e6e6; }
+
+.top-nav a {
+  padding: 3px 7px;
+  cursor: pointer;
+  background-color: #ffffff;
+  margin-left: 5px;
+  color: #c05b4d;
+  border: 1px solid #c05b4d;
+  border-radius: 5px; }
+  .top-nav a:hover {
+    color: #fefefe;
+    background-color: #c05b4d;
+    transition: 0.5s; }
+
 .posts {
   margin-bottom: 20px; }
 
@@ -908,16 +931,18 @@ h6 {
     font-family: Athelas, STHeiti, Microsoft Yahei, serif; }
     .post .post-content .read-more .read-more-link:hover {
       border-bottom: 1px solid #c05b4d; }
-  .post .post-copyright {
+  .post .emphasized-title {
+    font-weight: bolder !important; }
+  .post .post-cp {
     margin-top: 20px;
     padding-top: 10px;
     border-top: 1px dashed #e6e6e6; }
-    .post .post-copyright .copyright-item {
+    .post .post-cp .cp-item {
       margin: 5px 0;
       word-break: normal;
       white-space: pre-warp;
       word-wrap: break-word; }
-      .post .post-copyright .copyright-item a {
+      .post .post-cp .cp-item a {
         color: #c05b4d; }
   .post .post-reward {
     margin-top: 20px;
@@ -994,6 +1019,45 @@ h6 {
       display: none; }
     .post .post-footer .post-nav .nav-mobile {
       display: inline; } }
+  .post .popular-posts {
+    border-top: 1px dashed #e6e6e6;
+    list-style-type: circle;
+    padding-top: 10px; }
+  .post .popular-posts-title a {
+    color: #c05b4d; }
+  .post .popular-posts-title h3 {
+    font-size: 16px;
+    margin: 0; }
+  .post .custom-footer {
+    text-align: center;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px dashed #e6e6e6; }
+  .post .wechat-qrcode {
+    width: 160px;
+    height: 160px; }
+  .post .newsletter-submit-button {
+    margin: 15px 0;
+    padding: 3px 7px;
+    display: inline-block;
+    color: #c05b4d;
+    border: 1px solid #c05b4d;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ffffff; }
+    .post .newsletter-submit-button:hover {
+      color: #fefefe;
+      background-color: #c05b4d;
+      transition: 0.5s; }
+  .post .newsletter-email-field {
+    margin: 15px 0;
+    padding: 3px 7px;
+    display: inline-block;
+    border: 1px solid #c05b4d;
+    border-radius: 5px;
+    background-color: #ffffff; }
 
 .pagination {
   margin: 2em 0; }
@@ -1043,6 +1107,8 @@ h6 {
       display: block; }
       .footer .copyright .copyright-year .heart {
         font-size: 14px; }
+  .footer .footer-link {
+    color: #c05b4d; }
 
 .archive {
   margin: 2em 0px;
