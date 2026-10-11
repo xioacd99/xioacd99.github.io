@@ -1,0 +1,34 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { postSlug } from '../lib/posts';
+import { site, path, dateLabel, tagSlug } from '../lib/site';
+import { localizedPath, ui, type Locale } from '../lib/i18n';
+interface Props { locale: Locale; post: CollectionEntry<'blog'>; }
+const { locale, post } = Astro.props;
+const en = locale === 'en';
+const t = ui[locale];
+const slug = postSlug(post);
+const { Content, headings } = await render(post);
+const canonical = new URL(localizedPath(`articles/${slug}/`, locale), Astro.site).href;
+const shareURL = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: post.data.title, url: canonical })}`;
+const jsonLD = { '@context': 'https://schema.org', '@type': 'BlogPosting', inLanguage: en ? 'en' : 'zh-CN', headline: post.data.title, description: post.data.description, datePublished: post.data.date.toISOString(), image: new URL(path(`og/${slug}.png`), Astro.site).href, url: canonical, publisher: { '@type': 'Organization', name: site.title }, ...(post.data.demo ? {} : { author: { '@type': 'Person', name: 'Raymond' } }) };
+---
+<Layout locale={locale} title={post.data.title} description={post.data.description} image={slug} article date={post.data.date}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLD).replace(/</g, '\\u003c')} />
+  <article class="container article-page"><a class="back-link" href={localizedPath('articles/', locale)}>{t.backArticles}</a><header class="article-header"><div class="eyebrow">{post.data.category}{post.data.demo && <span class="demo-badge">{t.demo} · DEMO</span>}</div><h1>{post.data.title}</h1><p class="article-description">{post.data.description}</p><div class="article-meta"><span class="mini-avatar">r·</span><span>{post.data.demo ? (en ? 'Sample content' : '演示内容') : 'Raymond'}</span><span>·</span><time datetime={post.data.date.toISOString()}>{dateLabel(post.data.date, locale)}</time><span>·</span><span>{post.data.readingTime} {t.read}</span></div></header>
+    <img class="article-cover" src={path(`og/${slug}.png`)} alt="" width="1200" height="630" />
+    <div class="article-layout"><div><div class="prose"><Content /></div><div class="article-tags">{post.data.tags.map((tag) => <a class="topic-chip" href={localizedPath(`tags/${tagSlug(tag)}/`, locale)}>{tag}</a>)}</div><div class="share-row"><span>{en ? 'Pass a useful thought along' : '把有用的思考分享出去'}</span><a class="button button-small" href={shareURL} target="_blank" rel="noopener noreferrer">{en ? 'Share on X' : '分享到 X'} ↗</a><button id="copy-link" class="button button-small" type="button"><Icon name="copy" size={15} /><span>{en ? 'Copy link' : '复制链接'}</span></button><span id="copy-status" class="sr-only" role="status"></span></div><p class="share-note">{en ? 'Private demo links require access. X preview cards can only be fetched after public publication.' : '私有演示链接仅供获授权的人访问；X 预览卡片需要公开发布后才能抓取。'}</p><a class="text-link" href={localizedPath('articles/', locale)}>{en ? '← Keep exploring the archive' : '← 继续阅读其他文章'}</a></div><aside class="article-toc"><span class="eyebrow">{en ? 'ON THIS PAGE' : '文章目录'}</span><nav aria-label={en ? 'Table of contents' : '文章目录'}>{headings.filter((h) => h.depth === 2).map((h) => <a href={`#${h.slug}`}>{h.text}</a>)}</nav><div class="toc-note">{en ? 'Read slowly.' : '慢慢读。'}<br/>{en ? 'Think deeply.' : '认真想。'}<br/><span>MAKE SOMETHING USEFUL.</span></div></aside></div>
+  </article>
+</Layout>
+<script>
+  const en = document.documentElement.lang === 'en';
+  const button = document.querySelector<HTMLButtonElement>('#copy-link');
+  button?.addEventListener('click', async () => {
+    const label = button.querySelector('span')!;
+    const status = document.querySelector('#copy-status')!;
+    try { await navigator.clipboard.writeText(window.location.href.split('#')[0]); label.textContent = en ? 'Copied' : '已复制'; status.textContent = en ? 'Article link copied' : '文章链接已复制'; }
+    catch { label.textContent = en ? 'Copy from address bar' : '请复制地址栏链接'; status.textContent = en ? 'Copy failed. Please copy the link from your browser address bar.' : '无法自动复制，请从浏览器地址栏复制链接'; }
+  });
+</script>

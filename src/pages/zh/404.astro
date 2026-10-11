@@ -1,0 +1,5 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { localizedPath } from '../../lib/i18n';
+---
+<Layout locale="zh" title="页面未找到" noindex><section class="container page-section not-found"><span class="eyebrow">404 / UNCHARTED TERRITORY</span><h1>这条路还没有笔记。</h1><p>页面可能已移动，或链接有误。回到首页继续探索吧。</p><a class="button button-primary" href={localizedPath('', 'zh')}>返回首页 →</a></section></Layout>

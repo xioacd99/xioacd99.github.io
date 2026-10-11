@@ -1,0 +1,7 @@
+---
+import View from '../../../views/Article.astro';
+import { getPosts, postSlug } from '../../../lib/posts';
+export async function getStaticPaths() { return (await getPosts('zh')).map((post) => ({ params: { id: postSlug(post) }, props: { post } })); }
+const { post } = Astro.props;
+---
+<View locale="zh" post={post} />

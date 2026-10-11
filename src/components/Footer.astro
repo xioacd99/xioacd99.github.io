@@ -1,0 +1,11 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../lib/site';
+import { localizedPath, ui, type Locale } from '../lib/i18n';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+---
+<footer class="site-footer container">
+  <div class="footer-top"><div><a class="footer-title" href={localizedPath('', locale)}>Keep building. Keep learning.</a><p>{ui[locale].footer}</p></div><a class="rss-link" href={localizedPath('rss.xml', locale)}><Icon name="rss" size={18} /> {ui[locale].rss} <Icon name="arrow" size={16} /></a></div>
+  <div class="footer-bottom"><span>© {new Date().getFullYear()} Raymond's Field Notes</span><span>Built with Astro · Written in Markdown</span><a href={site.repository} target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div>
+</footer>

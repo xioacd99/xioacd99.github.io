@@ -1,0 +1,11 @@
+---
+import View from '../../../views/Topic.astro';
+import { getPosts } from '../../../lib/posts';
+import { tagSlug } from '../../../lib/site';
+export async function getStaticPaths() {
+  const posts = await getPosts('zh');
+  return [...new Set(posts.flatMap((post) => post.data.tags))].map((tag) => ({ params: { tag: tagSlug(tag) }, props: { tag, posts: posts.filter((post) => post.data.tags.includes(tag)) } }));
+}
+const { tag, posts } = Astro.props;
+---
+<View locale="zh" tag={tag} posts={posts} />

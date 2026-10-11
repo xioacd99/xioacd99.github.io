@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Artwork from './Artwork.astro';
+import Icon from './Icon.astro';
+import { dateLabel } from '../lib/site';
+import { postSlug } from '../lib/posts';
+import { localizedPath, ui, type Locale } from '../lib/i18n';
+interface Props { post: CollectionEntry<'blog'>; featured?: boolean; locale?: Locale; }
+const { post, featured = false, locale = 'en' } = Astro.props;
+const slug = postSlug(post);
+const art = slug === 'useful-agents' ? 'agents' : slug === 'static-publishing' ? 'static' : 'stream';
+const url = localizedPath(`articles/${slug}/`, locale);
+---
+<article class:list={['post-card', { 'featured-card': featured }]}>
+  <a class="post-art-link" href={url} tabindex="-1" aria-hidden="true"><Artwork variant={art} /></a>
+  <div class="post-card-body"><div class="eyebrow"><span>{post.data.category}</span>{post.data.demo && <span class="demo-badge">{ui[locale].demo}</span>}</div>
+    <h3><a href={url}>{post.data.title}</a></h3><p>{post.data.description}</p>
+    <div class="post-meta"><span>{dateLabel(post.data.date, locale)}</span><span class="meta-dot">·</span><span>{post.data.readingTime} {ui[locale].read}</span><a class="card-arrow" href={url} aria-label={`${locale === 'en' ? 'Read' : '阅读'}: ${post.data.title}`}><Icon name="arrow" /></a></div>
+  </div>
+</article>

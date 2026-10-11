@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts } from '../lib/posts';
+import { ui, type Locale } from '../lib/i18n';
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const posts = await getPosts(locale);
+const en = locale === 'en';
+---
+<Layout locale={locale} title={ui[locale].allArticles}><section class="container page-section"><div class="page-heading"><span class="eyebrow">THE ARCHIVE</span><h1>{en ? 'Notes from the workbench' : '文字里的思考'}<span>{en ? 'Writing' : 'Writing'}</span></h1><p>{en ? `Questions, experiments, and ideas worth sharing. ${posts.length} articles so far.` : `从问题出发，沿着实践寻找答案。共 ${posts.length} 篇文章。`}</p></div><div class="post-grid archive-grid">{posts.map((post) => <PostCard post={post} locale={locale} />)}</div></section></Layout>

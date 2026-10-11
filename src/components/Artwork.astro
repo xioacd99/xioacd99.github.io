@@ -1,0 +1,8 @@
+---
+interface Props { variant?: 'hero' | 'agents' | 'static' | 'stream'; }
+const { variant = 'hero' } = Astro.props;
+---
+<div class:list={['artwork', `artwork-${variant}`]} aria-hidden="true">
+  <div class="art-grid"></div>
+  {variant === 'hero' ? <><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="orbit-core"></div><span class="art-cross cross-one">+</span><span class="art-cross cross-two">+</span><div class="art-label"><span class="status-dot"></span> IDEAS → SYSTEMS</div><div class="art-coordinate">FIELD NOTES / VOL. 01<br/>BUILD / EXPLORE / REPEAT</div><span class="art-number">01—∞</span></> : variant === 'agents' ? <><div class="agent-node node-input">INPUT<span>01</span></div><div class="agent-node node-context">CONTEXT<span>02</span></div><div class="agent-node node-action">ACTION<span>03</span></div><div class="node-line line-one"></div><div class="node-line line-two"></div><div class="agent-core">a<span>↗</span></div><span class="art-caption">FROM IDEAS TO SYSTEMS</span></> : variant === 'static' ? <><div class="code-art"><span>&lt;article&gt;</span><i></i><i></i><i></i><span>&lt;/article&gt;</span></div><span class="art-caption">LESS INFRA. MORE WRITING.</span></> : <><div class="stream-art">{Array.from({ length: 17 }, (_, i) => <i style={`--h:${24 + ((i * 17) % 65)}%;--delay:${i * 40}ms`}></i>)}</div><span class="art-caption">FIND SIGNAL IN THE STREAM</span></>}
+</div>

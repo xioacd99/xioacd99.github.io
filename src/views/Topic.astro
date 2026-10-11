@@ -1,0 +1,9 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import { localizedPath, ui, type Locale } from '../lib/i18n';
+interface Props { locale: Locale; tag: string; posts: CollectionEntry<'blog'>[]; }
+const { locale, tag, posts } = Astro.props;
+---
+<Layout locale={locale} title={tag}><section class="container page-section"><a class="back-link" href={localizedPath('tags/', locale)}>← {ui[locale].allTopics}</a><div class="page-heading"><span class="eyebrow">TOPIC / {posts.length} ARTICLES</span><h1>{tag}</h1><p>{locale === 'en' ? `Field notes on ${tag}.` : `与 ${tag} 有关的技术笔记。`}</p></div><div class="post-grid archive-grid">{posts.map((post) => <PostCard post={post} locale={locale} />)}</div></section></Layout>

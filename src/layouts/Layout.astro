@@ -1,0 +1,32 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, path } from '../lib/site';
+import '../styles/global.css';
+import { localizedPath, alternatePath, ui, type Locale } from '../lib/i18n';
+interface Props { locale?: Locale; title?: string; description?: string; image?: string; article?: boolean; date?: Date; noindex?: boolean; }
+const { locale = 'en', title, description = ui[Astro.props.locale || 'en'].description, image = 'default', article = false, date, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.title}` : site.title;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imageURL = new URL(path(`og/${image}.png`), Astro.site).href;
+---
+<!doctype html>
+<html lang={locale === 'en' ? 'en' : 'zh-CN'}>
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f6f1" /><meta name="description" content={description} /><meta name="generator" content={Astro.generator} />
+  <title>{fullTitle}</title><link rel="canonical" href={canonical} /><link rel="icon" type="image/svg+xml" href={path('favicon.svg')} />
+  <link rel="alternate" type="application/rss+xml" title={site.title} href={localizedPath('rss.xml', locale)} />
+  <link rel="alternate" hreflang={locale === 'en' ? 'en' : 'zh-CN'} href={canonical} />
+  <link rel="alternate" hreflang={locale === 'en' ? 'zh-CN' : 'en'} href={new URL(alternatePath(Astro.url.pathname, locale), Astro.site).href} />
+  {noindex && <meta name="robots" content="noindex,follow" />}
+  <meta property="og:type" content={article ? 'article' : 'website'} /><meta property="og:site_name" content={site.title} /><meta property="og:locale" content={locale === 'en' ? 'en_US' : 'zh_CN'} /><meta property="og:locale:alternate" content={locale === 'en' ? 'zh_CN' : 'en_US'} /><meta property="og:title" content={fullTitle} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:image" content={imageURL} /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:image:alt" content={title || site.title} />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={fullTitle} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={imageURL} /><meta name="twitter:image:alt" content={title || site.title} />
+  {date && <meta property="article:published_time" content={date.toISOString()} />}
+  <script is:inline define:vars={{ rootPath: path(), chinesePath: localizedPath('', 'zh') }}>
+    try { if (window.location.pathname === rootPath && localStorage.getItem('language') === 'zh') window.location.replace(chinesePath); } catch {}
+    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch { document.documentElement.dataset.theme = 'light'; }
+  </script>
+</head>
+<body><a class="skip-link" href="#main">{ui[locale].skip}</a><Header locale={locale} /><main id="main"><slot /></main><Footer locale={locale} /></body>
+</html>

@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { getPosts } from '../lib/posts';
+import { tagSlug } from '../lib/site';
+import { localizedPath, ui, type Locale } from '../lib/i18n';
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const posts = await getPosts(locale);
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+const en = locale === 'en';
+---
+<Layout locale={locale} title={ui[locale].topics}><section class="container page-section"><div class="page-heading"><span class="eyebrow">THREADS OF CURIOSITY</span><h1>{en ? 'Follow your curiosity' : '按兴趣探索'}<span>Topics</span></h1><p>{en ? 'Pick a thread. See where it takes you.' : '沿着一个主题，把问题再想深一点。'}</p></div><div class="tag-grid">{tags.map((tag, i) => <a class="tag-tile" href={localizedPath(`tags/${tagSlug(tag)}/`, locale)}><span class="eyebrow">0{i + 1} / TOPIC</span><h2>{tag}</h2><div><span>{posts.filter((post) => post.data.tags.includes(tag)).length} {en ? 'articles' : '篇文章'}</span><Icon name="arrow" /></div></a>)}</div></section></Layout>

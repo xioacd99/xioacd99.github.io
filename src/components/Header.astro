@@ -1,0 +1,50 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../lib/site';
+import { localizedPath, alternatePath, ui, type Locale } from '../lib/i18n';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const t = ui[locale];
+const current = Astro.url.pathname;
+const active = (route: string) => current.startsWith(localizedPath(route, locale));
+const switchURL = alternatePath(current, locale);
+---
+<header class="site-header container">
+  <a class="brand" href={localizedPath('', locale)} aria-label={`Raymond's Field Notes ${t.home}`}><span class="brand-mark">r<span>·</span></span><span><strong>Raymond</strong><small>FIELD NOTES</small></span></a>
+  <nav aria-label={locale === 'en' ? 'Main navigation' : '主导航'}>
+    <a class:list={[{ active: active('articles/') }]} href={localizedPath('articles/', locale)}>{t.writing}</a>
+    <a class:list={[{ active: active('tags/') }]} href={localizedPath('tags/', locale)}>{t.topics}</a>
+    <a class:list={[{ active: active('about/') }]} href={localizedPath('about/', locale)}>{t.about}</a>
+  </nav>
+  <div class="header-tools">
+    <a class="language-toggle" id="language-toggle" href={switchURL} lang={locale === 'en' ? 'zh' : 'en'} hreflang={locale === 'en' ? 'zh-CN' : 'en'} data-locale={locale === 'en' ? 'zh' : 'en'} aria-label={locale === 'en' ? 'Switch to Chinese' : 'Switch to English'}>{locale === 'en' ? '中文' : 'EN'}</a>
+    <a class="icon-button search-button" href={localizedPath('search/', locale)} aria-label={t.search}><Icon name="search" /><span class="key-hint">/</span></a>
+    <button id="theme-toggle" class="icon-button" aria-label={t.dark} title={locale === 'en' ? 'Change theme' : '切换主题'}><span class="light-icon"><Icon name="moon" /></span><span class="dark-icon"><Icon name="sun" /></span></button>
+    <a class="github-button" href={site.repository} target="_blank" rel="noopener noreferrer"><Icon name="github" size={17} /><span>GitHub</span><Icon name="arrow" size={14} /></a>
+  </div>
+</header>
+<script>
+  const en = document.documentElement.lang === 'en';
+  const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
+  const syncLabel = () => toggle?.setAttribute('aria-label', document.documentElement.dataset.theme === 'dark' ? (en ? 'Switch to light mode' : '切换浅色模式') : (en ? 'Switch to dark mode' : '切换深色模式'));
+  syncLabel();
+  toggle?.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('theme', theme); } catch {}
+    syncLabel();
+  });
+  document.querySelector<HTMLAnchorElement>('#language-toggle')?.addEventListener('click', (event) => {
+    const link = event.currentTarget as HTMLAnchorElement;
+    try { localStorage.setItem('language', link.dataset.locale || 'en'); } catch {}
+    if (location.search) link.search = location.search;
+  });
+  document.addEventListener('keydown', (event) => {
+    const tag = (event.target as HTMLElement).tagName;
+    if (event.key === '/' && !['INPUT', 'TEXTAREA'].includes(tag) && !(event.target as HTMLElement).isContentEditable) {
+      event.preventDefault();
+      const target = document.querySelector<HTMLAnchorElement>('.search-button');
+      if (target) window.location.href = target.href;
+    }
+  });
+</script>
