@@ -23,7 +23,7 @@
 需要 Node.js 22.12+，推荐 Node.js 24。
 
 ```sh
-npm ci
+npm ci --ignore-scripts
 npm run dev
 # 默认 http://127.0.0.1:4321
 ```
@@ -153,6 +153,17 @@ public/                图标、卡片图片、.nojekyll
 
 ## 维护与扩展
 
-依赖版本由 `package-lock.json` 固定，CI 使用 `npm ci`。升级后运行 `npm run verify`，并检查手机/桌面排版、搜索空状态、主题切换、文章目录与链接。内容由仓库维护者控制；不要直接渲染未经审查的外部 Markdown/HTML。
+依赖版本由 `package-lock.json` 和 npm 完整性校验固定，CI 使用 `npm ci --ignore-scripts`，避免依赖安装时执行生命周期脚本。当前依赖的预编译组件已通过这种安装方式验证；新增依赖时应重新验证，不要直接移除该限制。升级后运行 `npm run verify`，并检查手机/桌面排版、搜索空状态、主题切换、文章目录与链接。内容由仓库维护者控制；不要直接渲染未经审查的外部 Markdown/HTML。
+
+### 构建安全
+
+- CI 与手动 Pages 构建都会执行 `npm audit --audit-level=moderate`，已知中危及以上依赖告警会阻止后续构建/发布。审计依赖 npm 官方服务，服务不可用时也会失败；应查明原因后重跑，不要直接忽略告警
+- 官方 GitHub Actions 均固定到完整 commit SHA；升级时核验官方 release 对应的 commit，同时检查 composite action 内部引用。Pages artifact 使用 v4，内部 upload action 同样固定 SHA，且不会打包隐藏文件
+- 构建只授予 `contents: read`，checkout 不保留 Git 凭据；仅已存在、手动且开关控制的 Pages deploy job 保留必需的 `pages: write` 和 `id-token: write`
+- 构建任务 15 分钟超时，Pages 发布 10 分钟超时；普通 CI 产物保存 7 天，缺失产物立即报错
+- 封面工具只解析 YAML 数据，拒绝可执行 frontmatter、重复键与过度 alias 展开。旧 `gray-matter` 依赖链已移除；图片工具使用已修复版本 `sharp@0.35.5`
+- 安全回归测试检查 workflow 权限、Action SHA、包来源及 YAML 输入。可手动运行 `npm audit` 查看全部审计结果；零告警不代表没有未知漏洞
+
+以上属于源码和构建加固，未更改账号安全设置、分支保护、令牌权限、Pages 开关或域名。网站没有用户上传、评论、登录或常驻 API；后续加入这些功能前需要重新评估威胁和输入处理。
 
 本项目尚未选择开源许可证；公开可见不等于授予开源使用许可。正式复用或转载前请联系作者，后续可单独选择许可证和内容版权声明。

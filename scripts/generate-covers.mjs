@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises';
-import matter from 'gray-matter';
+import { readFrontmatter } from './frontmatter.mjs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 process.env.XDG_CACHE_HOME ||= join(tmpdir(), 'field-notes-cache');
@@ -14,7 +14,7 @@ const publishedNames = new Set();
 const known = new Set(themes.map(([name]) => name));
 for (const file of await readdir('src/content/blog', { recursive: true })) {
   if (!file.endsWith('.md')) continue;
-  const { data } = matter(await readFile(join('src/content/blog', file), 'utf8'));
+  const data = readFrontmatter(await readFile(join('src/content/blog', file), 'utf8'), file);
   if (data.draft || new Date(data.date).getTime() > Date.now()) continue;
   const name = file.replace(/\.md$/, '').replace(/^(en|zh)\//, '');
   publishedNames.add(name);
