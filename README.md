@@ -1,6 +1,6 @@
 # Raymond's Field Notes
 
-一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先，适合未来部署到 GitHub Pages。源码仓库和网站现均已公开。当前网站托管于 Sites；GitHub Pages 尚未启用。
+一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先。源码仓库和网站均公开；用户站点仓库为 `xioacd99/xioacd99.github.io`，GitHub Pages 目标网址是 `https://xioacd99.github.io/`。现有 Sites 地址保留独立部署，两种构建配置可以并存。
 
 ## 已实现
 
@@ -14,7 +14,7 @@
 - RSS、sitemap、robots.txt、canonical、Open Graph、X 大图卡片元数据
 - 每篇文章对应的本地 1200 × 630 PNG 图片，X 分享入口、复制文章链接
 - GitHub 仓库入口与 Star 入口（不伪造 Star 数量）
-- GitHub Actions 构建检查；公开 Pages 部署默认关闭
+- GitHub Actions 安全构建检查；Pages 使用手动触发及显式仓库开关
 
 演示文章及其专用封面已移除，当前没有已发布文章。首页、文章列表、主题页和搜索均提供中英文空态，RSS 保持有效空订阅源。添加首篇双语文章后，内容索引与页面会自动生成。
 
@@ -48,7 +48,7 @@ Astro 内容集合 + TypeScript 模板
          ↓ 构建时生成
 HTML / CSS / 少量浏览器 JS / RSS / sitemap / PNG 卡片
          ↓ 部署静态目录 dist/
-公开 Sites 站点（当前部署方式）
+GitHub Pages 用户站点 / 独立 Sites 部署
 ```
 
 阅读、搜索、分类、RSS 和分享不需要账号、数据库或服务端 API。没有虚假的管理后台或不能用的发布按钮。写作直接在仓库中进行；若将来确实需要评论、在线 CMS 或订阅邮件，再单独选择服务。
@@ -95,37 +95,41 @@ coverTitle: "A useful first step"
 | 变量 | 用途 | 默认值 |
 | --- | --- | --- |
 | `PUBLIC_SITE_URL` | 最终网址的 origin，不含子路径 | `https://example.com` |
-| `PUBLIC_BASE_PATH` | 根目录 `/` 或 GitHub 项目子目录 `/tech-blogs` | `/` |
-| `PUBLIC_REPOSITORY_URL` | GitHub/Star 链接目标 | `https://github.com/xioacd99/tech-blogs` |
+| `PUBLIC_BASE_PATH` | 用户站点与 Sites 使用 `/`；其他项目仓库使用 `/<repository-name>` | `/` |
+| `PUBLIC_REPOSITORY_URL` | GitHub/Star 链接目标 | `https://github.com/xioacd99/xioacd99.github.io` |
 
 不要将 `example.com` 作为正式部署配置。当前公开 Sites 站点的构建示例：
 
 ```sh
-PUBLIC_SITE_URL=https://raymond-field-notes.feyslug64.chatgpt.site npm run verify
+PUBLIC_SITE_URL=https://raymond-field-notes.feyslug64.chatgpt.site PUBLIC_BASE_PATH=/ npm run verify
 ```
 
-未来 GitHub 项目 Pages 构建示例（只构建，不上传）：
+GitHub Pages 用户站点构建示例（只构建，不上传）：
 
 ```sh
-PUBLIC_SITE_URL=https://xioacd99.github.io PUBLIC_BASE_PATH=/tech-blogs npm run verify
+PUBLIC_SITE_URL=https://xioacd99.github.io PUBLIC_BASE_PATH=/ npm run verify
 ```
 
 如使用自定义域名，将 origin 改成该域名，`PUBLIC_BASE_PATH=/`。在 Windows PowerShell 中先用 `$env:PUBLIC_SITE_URL="…"` 设置变量，再运行构建命令。
 
 Astro 配置通过 `process.env` 读取这两个构建变量。`.env.example` 是配置说明，不会自动覆盖构建命令。不要把凭证放在 `PUBLIC_` 变量里。
 
-## 当前公开站点与未来 GitHub Pages 部署
+## GitHub Pages 与 Sites 独立部署
 
 公开 Sites 站点的项目配置独立保管，不随 GitHub 源码提交。部署目录是 `dist/`。更改源码后使用 Sites 的官方工作流构建、保存版本、部署，并保持已批准的公开访问范围。
 
-GitHub 仓库的 `ci.yml` 只安装、检查、构建并保存静态构建产物，推送到 `main` 不会自动部署或更新网站。当前公开站点通过 Sites 单独部署，GitHub Pages 尚未启用。
+GitHub 仓库的 `ci.yml` 只安装、审计、检查、构建并保存产物，推送到 `main` 不会自动部署网站。GitHub Pages 使用单独的手动工作流；Sites 仍通过自己的部署流程更新。
 
 `pages.yml` 有两道限制：
 
 1. 仅允许手动 `workflow_dispatch`，不监听 push
 2. 只有仓库变量 `ENABLE_PUBLIC_PAGES=true` 时运行
 
-未来决定启用 GitHub Pages 时，再确认托管计划、Pages 支持条件、目标域名，以及准备发布的内容。确认之后配置 Pages 的 GitHub Actions 来源，显式启用变量，再运行手动工作流。公开当前 Sites 站点不会自动启用 Pages。自定义域名还需修改工作流内的 origin/base。
+将仓库 Pages 的发布来源设为 GitHub Actions，并在确认发布后设置 `ENABLE_PUBLIC_PAGES=true`，然后手动运行 Pages 工作流。代码中的开关检查与手动触发要求始终保留，不因仓库改名而扩大权限。
+
+`scripts/github-pages-config.mjs` 只在 Pages 工作流中运行：当仓库名是 `<owner>.github.io` 时使用根路径 `/`，其他项目仓库使用 `/<repository-name>`。它同时设置对应的站点 origin 与仓库链接。该脚本不会写入 Astro 的全局默认值；构建 Sites 时仍显式使用原 Sites origin 和 `/`。
+
+用户站点不能使用 `/xioacd99.github.io` 或旧的 `/tech-blogs` 作为 base。两种部署应分别生成 canonical、RSS、sitemap 和分享图片 URL，不要将其中一份 `dist/` 直接当作另一站点的构建产物。自定义域名需要另外确认并调整 Pages 配置脚本的 origin/base。规则参考 [GitHub Pages 站点类型](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)。
 
 ## X 分享卡片与 GitHub Stars
 
@@ -148,7 +152,7 @@ src/styles/            响应式样式与主题
 scripts/               构建包装、卡片生成
 tests/                 产物和部署安全检查
 public/                图标、卡片图片、.nojekyll
-.github/workflows/     CI 与默认关闭的手动 Pages 部署
+.github/workflows/     安全 CI 与显式开关控制的手动 Pages 部署
 ```
 
 ## 维护与扩展
@@ -164,6 +168,6 @@ public/                图标、卡片图片、.nojekyll
 - 封面工具只解析 YAML 数据，拒绝可执行 frontmatter、重复键与过度 alias 展开。旧 `gray-matter` 依赖链已移除；图片工具使用已修复版本 `sharp@0.35.5`
 - 安全回归测试检查 workflow 权限、Action SHA、包来源及 YAML 输入。可手动运行 `npm audit` 查看全部审计结果；零告警不代表没有未知漏洞
 
-以上属于源码和构建加固，未更改账号安全设置、分支保护、令牌权限、Pages 开关或域名。网站没有用户上传、评论、登录或常驻 API；后续加入这些功能前需要重新评估威胁和输入处理。
+这些源码和构建检查不负责更改账号安全设置、分支保护、令牌权限、Pages 开关或域名；相关设置需在 GitHub 中单独管理。网站没有用户上传、评论、登录或常驻 API；后续加入这些功能前需要重新评估威胁和输入处理。
 
 本项目尚未选择开源许可证；公开可见不等于授予开源使用许可。正式复用或转载前请联系作者，后续可单独选择许可证和内容版权声明。
