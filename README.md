@@ -1,6 +1,6 @@
 # Raymond's Field Notes
 
-一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先，适合未来部署到 GitHub Pages。源码仓库已由作者设为公开；现有演示预览仍保持私有，网站公开发布需单独确认。
+一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先，适合未来部署到 GitHub Pages。源码仓库和演示站现均已公开。当前网站托管于 Sites；GitHub Pages 尚未启用。
 
 ## 已实现
 
@@ -48,7 +48,7 @@ Astro 内容集合 + TypeScript 模板
          ↓ 构建时生成
 HTML / CSS / 少量浏览器 JS / RSS / sitemap / PNG 卡片
          ↓ 部署静态目录 dist/
-私有预览，或得到授权后的公开托管
+公开 Sites 站点（当前部署方式）
 ```
 
 阅读、搜索、分类、RSS 和分享不需要账号、数据库或服务端 API。没有虚假的管理后台或不能用的发布按钮。写作直接在仓库中进行；若将来确实需要评论、在线 CMS 或订阅邮件，再单独选择服务。
@@ -98,10 +98,10 @@ coverTitle: "A useful first step"
 | `PUBLIC_BASE_PATH` | 根目录 `/` 或 GitHub 项目子目录 `/tech-blogs` | `/` |
 | `PUBLIC_REPOSITORY_URL` | GitHub/Star 链接目标 | `https://github.com/xioacd99/tech-blogs` |
 
-不要将 `example.com` 作为正式部署配置。私有 Sites 预览构建示例：
+不要将 `example.com` 作为正式部署配置。当前公开 Sites 站点的构建示例：
 
 ```sh
-PUBLIC_SITE_URL=https://your-private-preview.example npm run verify
+PUBLIC_SITE_URL=https://raymond-field-notes.feyslug64.chatgpt.site npm run verify
 ```
 
 未来 GitHub 项目 Pages 构建示例（只构建，不上传）：
@@ -114,24 +114,24 @@ PUBLIC_SITE_URL=https://xioacd99.github.io PUBLIC_BASE_PATH=/tech-blogs npm run 
 
 Astro 配置通过 `process.env` 读取这两个构建变量。`.env.example` 是配置说明，不会自动覆盖构建命令。不要把凭证放在 `PUBLIC_` 变量里。
 
-## 私有预览与公开发布
+## 当前公开站点与未来 GitHub Pages 部署
 
-私有 Sites 预览的项目配置独立保管，不随 GitHub 源码提交。部署目录是 `dist/`。更改源码后使用 Sites 的官方工作流构建、保存版本、部署，并保持 owner-private 权限。
+公开 Sites 站点的项目配置独立保管，不随 GitHub 源码提交。部署目录是 `dist/`。更改源码后使用 Sites 的官方工作流构建、保存版本、部署，并保持已批准的公开访问范围。
 
-GitHub 仓库的 `ci.yml` 只安装、检查、构建并保存静态构建产物，推送到 `main` 不会公开网站。
+GitHub 仓库的 `ci.yml` 只安装、检查、构建并保存静态构建产物，推送到 `main` 不会自动部署或更新网站。当前公开站点通过 Sites 单独部署，GitHub Pages 尚未启用。
 
 `pages.yml` 有两道限制：
 
 1. 仅允许手动 `workflow_dispatch`，不监听 push
 2. 只有仓库变量 `ENABLE_PUBLIC_PAGES=true` 时运行
 
-未来决定公开时再确认：仓库可见性和托管计划、GitHub Pages 支持条件、公开域名、样例内容是否已替换。确认之后配置 Pages 的 GitHub Actions 来源，显式启用变量，再运行手动工作流。私有仓库不意味着 Pages 网站自动私有，务必单独检查托管访问权限。自定义域名还需修改工作流内的 origin/base。
+未来决定启用 GitHub Pages 时，再确认托管计划、Pages 支持条件、目标域名，以及是否保留示例文章。确认之后配置 Pages 的 GitHub Actions 来源，显式启用变量，再运行手动工作流。公开当前 Sites 站点不会自动启用 Pages。自定义域名还需修改工作流内的 origin/base。
 
 ## X 分享卡片与 GitHub Stars
 
-每篇文章输出 `summary_large_image`、绝对文章 URL 和绝对 PNG 图片 URL。X 是否显示卡片还取决于其抓取、缓存和平台策略，不能保证每次即时呈现。私有演示需要登录，X 抓取器无法读取，因此完整卡片验证应在获得公开发布授权之后进行。
+每篇文章输出 `summary_large_image`、绝对文章 URL 和绝对 PNG 图片 URL。X 是否显示卡片还取决于其抓取、缓存和平台策略，不能保证每次即时呈现。当前文章与图片已公开可访问，但尚不保证 X 已成功抓取或展示卡片。
 
-“Star on GitHub”打开对应仓库，不会替读者自动点 Star。源码仓库公开后，读者可以查看源码并自行选择是否 Star。
+“Star on GitHub”打开对应仓库，不会替读者自动点 Star。源码仓库已公开，读者可以查看源码并自行选择是否 Star。
 
 ## 目录
 
