@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import EmptyState from '../components/EmptyState.astro';
 import Artwork from '../components/Artwork.astro';
 import PostCard from '../components/PostCard.astro';
 import Icon from '../components/Icon.astro';
@@ -18,10 +19,10 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
 <Layout locale={locale}>
   <section class="hero container"><div class="hero-copy"><div class="eyebrow hero-eyebrow"><span class="status-dot"></span> A DEVELOPER'S FIELD NOTES</div><h1>Build things.<br/><em>Understand deeply.</em></h1><p>{en ? 'Make sense of the complex.' : '把复杂的问题想清楚，'}<br class="mobile-break"/>{en ? ' Build something useful.' : '把有用的东西做出来。'}</p><p class="hero-description">{en ? 'Notes on AI, software engineering, and the craft of building.' : '关于 AI、软件工程与构建过程的技术笔记。'}<br/>{en ? 'Ideas explored. Lessons worth keeping.' : '记录探索，也分享那些值得留下的方法。'}</p><a class="button button-primary" href={localizedPath('articles/', locale)}>{en ? 'Explore the writing' : '开始阅读'} <Icon name="arrow" size={18} /></a><span class="hero-footnote">THINK. BUILD. WRITE. REPEAT.</span></div><Artwork /></section>
   <section class="writing-section container" aria-labelledby="writing-heading"><div class="section-heading"><div><span class="eyebrow">THE NOTEBOOK</span><h2 id="writing-heading">{en ? 'Latest writing' : '最近的思考'}<span>{en ? 'Thoughts in progress' : 'Latest writing'}</span></h2></div><a class="text-link" href={localizedPath('articles/', locale)}>{t.allArticles} <Icon name="arrow" size={17} /></a></div>
-    <div class="topic-chips"><a class="topic-chip selected" href={localizedPath('articles/', locale)}>{en ? 'All notes' : '全部'} <span>{posts.length.toString().padStart(2, '0')}</span></a>{tags.map((tag) => <a class="topic-chip" href={localizedPath(`tags/${tagSlug(tag)}/`, locale)}>{tag}</a>)}</div>
+    {posts.length > 0 && <div class="topic-chips"><a class="topic-chip selected" href={localizedPath('articles/', locale)}>{en ? 'All notes' : '全部'} <span>{posts.length.toString().padStart(2, '0')}</span></a>{tags.map((tag) => <a class="topic-chip" href={localizedPath(`tags/${tagSlug(tag)}/`, locale)}>{tag}</a>)}</div>}
     {featured && <PostCard post={featured} featured locale={locale} />}
-    <div class="post-grid">{remaining.map((post) => <PostCard post={post} locale={locale} />)}</div>
+    {remaining.length > 0 && <div class="post-grid">{remaining.map((post) => <PostCard post={post} locale={locale} />)}</div>}
+    {posts.length === 0 && <EmptyState locale={locale} heading="h3" />}
   </section>
   <section class="note-band container"><div class="note-monogram">r<span>·</span></div><div><span class="eyebrow">A SMALL CORNER OF THE INTERNET</span><h2>{en ? 'Good ideas deserve a place to grow.' : '好的想法，值得被认真记录。'}</h2><p>{en ? 'Written in Markdown. Kept simple, open to change, and built to last.' : '这个博客从 Markdown 出发，让内容保持简单、开放、可迭代。'}</p></div><a class="text-link" href={site.repository} target="_blank" rel="noopener noreferrer"><Icon name="star" size={17} /> Star on GitHub <Icon name="arrow" size={16} /></a></section>
-  {posts.some((post) => post.data.demo) && <div class="demo-note container"><span class="demo-badge">DEMO</span> {en ? `${posts.filter((post) => post.data.demo).length} sample articles demonstrate this site. They do not represent the author's real projects or opinions.` : `当前包含 ${posts.filter((post) => post.data.demo).length} 篇示例文章，仅用于体验站点，不代表作者的真实项目或观点。`}</div>}
 </Layout>

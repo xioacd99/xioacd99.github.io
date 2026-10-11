@@ -1,0 +1,9 @@
+---
+import type { Locale } from '../lib/i18n';
+interface Props { locale: Locale; kind?: 'articles' | 'topics'; heading?: 'h2' | 'h3'; }
+const { locale, kind = 'articles', heading: Heading = 'h2' } = Astro.props;
+const en = locale === 'en';
+const title = kind === 'topics' ? (en ? 'No topics yet.' : '主题还在等待第一篇文章。') : (en ? 'A fresh page.' : '从第一篇笔记开始。');
+const description = kind === 'topics' ? (en ? 'Topics will appear automatically when articles are published.' : '发布文章后，相关主题会自动出现在这里。') : (en ? 'No articles have been published yet. This is where new writing will appear.' : '暂时还没有发布文章。新的文字会从这里开始。');
+---
+<div class="content-empty-state" data-empty-content={kind}><span class="empty-mark" aria-hidden="true">↳</span><Heading>{title}</Heading><p>{description}</p></div>

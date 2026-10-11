@@ -14,7 +14,7 @@ test('fresh storage keeps English; saved Chinese restores only the home page', a
   const html = await readFile('dist/index.html', 'utf8');
   const script = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map((match) => match[1]).find((value) => value.includes("getItem('language')"));
   assert.ok(script);
-  for (const [language, pathname, shouldRedirect] of [[null, root, false], ['en', root, false], ['zh', root, true], ['zh', `${root}articles/useful-agents/`, false]]) {
+  for (const [language, pathname, shouldRedirect] of [[null, root, false], ['en', root, false], ['zh', root, true], ['zh', `${root}articles/a-note/`, false]]) {
     const redirects = [];
     vm.runInNewContext(script, { localStorage: { getItem: (key) => key === 'language' ? language : null }, window: { location: { pathname, replace: (url) => redirects.push(url) } }, document: { documentElement: { dataset: {} } }, matchMedia: () => ({ matches: false }) });
     assert.deepEqual(redirects, shouldRedirect ? [`${root}zh/`] : []);
@@ -46,5 +46,21 @@ test('search handles matching, empty, and reset states in both languages', async
     input.value = 'no such term'; events.input(); assert.equal(results.filter((result) => !result.hidden).length, 0); assert.equal(empty.hidden, false);
     assert.equal(status.textContent, lang === 'en' ? '0 matching articles' : '找到 0 篇相关文章');
     input.value = ''; events.input(); assert.equal(results.filter((result) => !result.hidden).length, 3); assert.equal(empty.hidden, true);
+  }
+});
+
+test('search initializes, submits, and resets safely with no article records', async () => {
+  const script = await sourceScript('src/views/Search.astro');
+  for (const lang of ['en', 'zh-CN']) {
+    const events = {};
+    const input = { value: '', addEventListener: (_, fn) => { events.input = fn; } };
+    const form = { addEventListener: (_, fn) => { events.submit = fn; } };
+    const status = { textContent: '' }, empty = { hidden: true };
+    const document = { documentElement: { lang }, querySelector: (selector) => ({ '#search-input': input, '.search-form': form, '#search-status': status, '#empty-state': empty })[selector], querySelectorAll: () => [] };
+    vm.runInNewContext(script, { document, URL, URLSearchParams, location: { search: '' }, window: { location: { href: 'https://example.com/search/' } }, history: { replaceState: () => {} } });
+    assert.equal(empty.hidden, false); assert.equal(status.textContent, lang === 'en' ? 'All 0 articles' : '全部 0 篇文章');
+    input.value = 'a query'; events.submit({ preventDefault() {} });
+    assert.equal(empty.hidden, false); assert.equal(status.textContent, lang === 'en' ? '0 matching articles' : '找到 0 篇相关文章');
+    input.value = ''; events.input(); assert.equal(empty.hidden, false);
   }
 });

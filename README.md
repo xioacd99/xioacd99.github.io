@@ -1,11 +1,11 @@
 # Raymond's Field Notes
 
-一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先，适合未来部署到 GitHub Pages。源码仓库和演示站现均已公开。当前网站托管于 Sites；GitHub Pages 尚未启用。
+一个可以直接运行的个人技术博客。Astro + TypeScript + Markdown，静态优先，适合未来部署到 GitHub Pages。源码仓库和网站现均已公开。当前网站托管于 Sites；GitHub Pages 尚未启用。
 
 ## 已实现
 
 - 默认英文，中文路径 `/zh/`；语言按钮切换到对应页面/同一篇文章，并保存选择。下一次访问首页会恢复已选择的中文；没有保存偏好时使用英文
-- 导航、页面文案、三篇演示文章正文、搜索提示、元数据和 RSS 均区分中英文
+- 导航、页面文案、文章内容管线、搜索提示、元数据和 RSS 均区分中英文
 
 - 响应式首页、文章列表/详情、主题目录与分类页
 - 本地全文搜索：标题、摘要、标签和 Markdown 正文；不调用外部搜索服务
@@ -16,7 +16,7 @@
 - GitHub 仓库入口与 Star 入口（不伪造 Star 数量）
 - GitHub Actions 构建检查；公开 Pages 部署默认关闭
 
-首页及三篇文章均为演示内容。它们不代表 Raymond 的真实项目、经历或观点。替换成正式内容时删除相应 `demo: true` 标记。
+演示文章及其专用封面已移除，当前没有已发布文章。首页、文章列表、主题页和搜索均提供中英文空态，RSS 保持有效空订阅源。添加首篇双语文章后，内容索引与页面会自动生成。
 
 ## 快速开始
 
@@ -125,7 +125,7 @@ GitHub 仓库的 `ci.yml` 只安装、检查、构建并保存静态构建产物
 1. 仅允许手动 `workflow_dispatch`，不监听 push
 2. 只有仓库变量 `ENABLE_PUBLIC_PAGES=true` 时运行
 
-未来决定启用 GitHub Pages 时，再确认托管计划、Pages 支持条件、目标域名，以及是否保留示例文章。确认之后配置 Pages 的 GitHub Actions 来源，显式启用变量，再运行手动工作流。公开当前 Sites 站点不会自动启用 Pages。自定义域名还需修改工作流内的 origin/base。
+未来决定启用 GitHub Pages 时，再确认托管计划、Pages 支持条件、目标域名，以及准备发布的内容。确认之后配置 Pages 的 GitHub Actions 来源，显式启用变量，再运行手动工作流。公开当前 Sites 站点不会自动启用 Pages。自定义域名还需修改工作流内的 origin/base。
 
 ## X 分享卡片与 GitHub Stars
 

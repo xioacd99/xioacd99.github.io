@@ -8,7 +8,7 @@ import { localizedPath, ui, type Locale } from '../lib/i18n';
 interface Props { post: CollectionEntry<'blog'>; featured?: boolean; locale?: Locale; }
 const { post, featured = false, locale = 'en' } = Astro.props;
 const slug = postSlug(post);
-const art = slug === 'useful-agents' ? 'agents' : slug === 'static-publishing' ? 'static' : 'stream';
+const art = post.data.category === 'AI Engineering' ? 'agents' : post.data.category === 'Web Development' ? 'static' : 'stream';
 const url = localizedPath(`articles/${slug}/`, locale);
 ---
 <article class:list={['post-card', { 'featured-card': featured }]}>

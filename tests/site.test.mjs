@@ -80,3 +80,40 @@ test('public deployment is explicit and gated', async () => {
   assert.ok(workflow.includes("vars.ENABLE_PUBLIC_PAGES == 'true'"));
   assert.ok(!/^\s+push:/m.test(workflow));
 });
+
+test('empty locales have useful home, archive, topic, and search states with valid empty feeds', async () => {
+  for (const lang of ['en', 'zh']) {
+    if (entries.some((entry) => entry.lang === lang)) continue;
+    for (const page of ['index.html', 'articles/index.html']) {
+      const source = await html(`${prefix(lang)}${page}`);
+      assert.ok(source.includes('data-empty-content="articles"'), `Missing empty state: ${lang}/${page}`);
+      assert.ok(source.includes(lang === 'en' ? 'A fresh page.' : '从第一篇笔记开始。'));
+      assert.ok(!source.includes('class="post-card'), `Unexpected card in empty ${lang}/${page}`);
+    }
+    assert.ok((await html(`${prefix(lang)}tags/index.html`)).includes('data-empty-content="topics"'));
+    const search = await html(`${prefix(lang)}search/index.html`);
+    assert.ok(search.includes(lang === 'en' ? 'No articles yet.' : '暂时还没有文章。'));
+    assert.ok(!/id="empty-state"[^>]*\shidden/.test(search), 'Zero-content empty state should work before JavaScript loads');
+    const feed = await html(`${prefix(lang)}rss.xml`);
+    assert.ok(feed.includes('<rss ')); assert.ok(feed.includes('<channel>')); assert.ok(!feed.includes('<item>'));
+    const archiveFiles = await readdir(join('dist', prefix(lang), 'articles'));
+    assert.deepEqual(archiveFiles, ['index.html']);
+    const topicFiles = await readdir(join('dist', prefix(lang), 'tags'));
+    assert.deepEqual(topicFiles, ['index.html']);
+  }
+});
+
+test('generated social covers match current articles without stale files', async () => {
+  const files = (await readdir('dist/og', { recursive: true })).filter((file) => file.endsWith('.png')).sort();
+  assert.deepEqual(files, ['default.png', ...articles.map((id) => `${id}.png`)].sort());
+});
+
+test('language switches stay paired on all top-level pages when the archive is empty', async () => {
+  for (const lang of ['en', 'zh']) {
+    for (const route of ['', 'articles/', 'tags/', 'search/', 'about/']) {
+      const source = await html(`${prefix(lang)}${route}index.html`);
+      const other = `${base}/${prefix(lang === 'en' ? 'zh' : 'en')}${route}`;
+      assert.ok(source.includes(`id="language-toggle" href="${other}"`), `Missing counterpart: ${lang}/${route}`);
+    }
+  }
+});
